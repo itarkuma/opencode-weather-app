@@ -1,10 +1,18 @@
 # dependencies (bun install)
 node_modules
 
+# build artifacts
+weather
+
 # output
 out
 dist
 *.tgz
+weather
+weather.exe
+
+# local app data (Weather CLI persistence)
+/weather-data.json
 
 # code coverage
 coverage

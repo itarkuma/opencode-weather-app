@@ -1,6 +1,6 @@
 # AGENTS.md — 02-weather
 
-Bun + TypeScript console app (Weather CLI). Scaffold stage: `index.ts` is still `bun init` placeholder; real CLI described in `README.md` is not implemented yet.
+Bun + TypeScript console app (Weather CLI). Implemented: `index.ts` menu loop + `src/` modules (`storage.ts`, `openmeteo.ts`, `ui.ts`, `input.ts`); persistence in local `./weather-data.json` (gitignored).
 
 ## Commands (Bun only — no npm/node/jest/vite)
 

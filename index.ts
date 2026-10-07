@@ -17,18 +17,19 @@ import {
   printWeather,
   renderMenu,
 } from "./src/ui.ts";
+import { green, red } from "./src/colors.ts";
 
 async function showOne(store: Store, name: string): Promise<void> {
   const city = findCity(store, name);
   if (!city) {
-    console.log(`No encontré "${name}" en tu lista.`);
+    console.log(red(`No encontré "${name}" en tu lista.`));
     return;
   }
   try {
     const weather = await getCurrentWeather(city, store.unit);
     printWeather(city, weather, unitSymbol(store.unit));
   } catch (err) {
-    console.log(`No pude obtener el clima: ${(err as Error).message}`);
+    console.log(red(`No pude obtener el clima: ${(err as Error).message}`));
   }
 }
 
@@ -57,11 +58,11 @@ async function handleAdd(store: Store): Promise<void> {
   try {
     candidates = await searchCities(query);
   } catch (err) {
-    console.log(`Error buscando ciudad: ${(err as Error).message}`);
+    console.log(red(`Error buscando ciudad: ${(err as Error).message}`));
     return;
   }
   if (candidates.length === 0) {
-    console.log(`Sin resultados para "${query}".`);
+    console.log(red(`Sin resultados para "${query}".`));
     return;
   }
   printCandidates(candidates);
@@ -69,13 +70,13 @@ async function handleAdd(store: Store): Promise<void> {
   if (choice === null) return;
   const n = Number(choice);
   if (!Number.isInteger(n) || n < 0 || n > candidates.length) {
-    console.log("Opción inválida.");
+    console.log(red("Opción inválida."));
     return;
   }
   if (n === 0) return;
   const picked = candidates[n - 1]!;
   if (findCity(store, picked.name)) {
-    console.log(`"${picked.name}" ya está en tu lista.`);
+    console.log(red(`"${picked.name}" ya está en tu lista.`));
     return;
   }
   store.cities.push({
@@ -85,7 +86,7 @@ async function handleAdd(store: Store): Promise<void> {
     longitude: picked.longitude,
   });
   await saveStore(store);
-  console.log(`Agregada: ${cityKey(store.cities[store.cities.length - 1]!)}`);
+  console.log(green(`Agregada: ${cityKey(store.cities[store.cities.length - 1]!)}`));
 }
 
 async function pickFromList(
@@ -101,7 +102,7 @@ async function pickFromList(
   if (choice === null || choice === "0") return null;
   const n = Number(choice);
   if (!Number.isInteger(n) || n < 1 || n > store.cities.length) {
-    console.log("Opción inválida.");
+    console.log(red("Opción inválida."));
     return null;
   }
   return n - 1;
@@ -113,7 +114,7 @@ async function handleRemove(store: Store): Promise<void> {
   const [removed] = store.cities.splice(idx, 1);
   if (removed && store.defaultCity === removed.name) store.defaultCity = null;
   await saveStore(store);
-  console.log(`Eliminada: ${removed ? cityKey(removed) : ""}`);
+  console.log(green(`Eliminada: ${removed ? cityKey(removed) : ""}`));
 }
 
 async function handleSetDefault(store: Store): Promise<void> {
@@ -121,13 +122,13 @@ async function handleSetDefault(store: Store): Promise<void> {
   if (idx === null) return;
   store.defaultCity = store.cities[idx]!.name;
   await saveStore(store);
-  console.log(`Default: ${cityKey(store.cities[idx]!)}`);
+  console.log(green(`Default: ${cityKey(store.cities[idx]!)}`));
 }
 
 async function handleSettings(store: Store): Promise<void> {
   store.unit = store.unit === "celsius" ? "fahrenheit" : "celsius";
   await saveStore(store);
-  console.log(`Unidad actual: ${unitSymbol(store.unit)}`);
+  console.log(green(`Unidad actual: ${unitSymbol(store.unit)}`));
 }
 
 async function main(): Promise<void> {
@@ -162,7 +163,7 @@ async function main(): Promise<void> {
         console.log("¡Chau!");
         return;
       default:
-        console.log("Opción inválida. Elegí 1, 2, 3, 4, 5, 8 o 9.");
+        console.log(red("Opción inválida. Elegí 1, 2, 3, 4, 5, 8 o 9."));
     }
   }
 }

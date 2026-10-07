@@ -1,6 +1,7 @@
 import type { City, Store } from "./storage.ts";
 import { cityKey } from "./storage.ts";
 import { readLine } from "./input.ts";
+import { cyan, yellow } from "./colors.ts";
 import {
   unitSymbol,
   weatherCodeLabel,
@@ -11,17 +12,17 @@ import {
 const BAR = "════════════════════════════════════════";
 
 export function renderMenu(store: Store): void {
-  console.log(BAR);
-  console.log("         WEATHER CLI");
-  console.log(BAR);
-  console.log("  1. Clima de ciudad default");
-  console.log(`  2. Clima de todas las ciudades (${store.cities.length})`);
-  console.log("  3. Buscar y agregar ciudad");
-  console.log("  4. Eliminar ciudad");
-  console.log("  5. Establecer ciudad default");
-  console.log(`  8. Ajustes (${unitSymbol(store.unit)})`);
-  console.log("  9. Salir");
-  console.log(BAR);
+  console.log(cyan(BAR));
+  console.log(cyan("         WEATHER CLI"));
+  console.log(cyan(BAR));
+  console.log(`  ${cyan("1")}. Clima de ciudad default`);
+  console.log(`  ${cyan("2")}. Clima de todas las ciudades (${store.cities.length})`);
+  console.log(`  ${cyan("3")}. Buscar y agregar ciudad`);
+  console.log(`  ${cyan("4")}. Eliminar ciudad`);
+  console.log(`  ${cyan("5")}. Establecer ciudad default`);
+  console.log(`  ${cyan("8")}. Ajustes (${unitSymbol(store.unit)})`);
+  console.log(`  ${cyan("9")}. Salir`);
+  console.log(cyan(BAR));
 }
 
 export async function ask(prompt: string): Promise<string | null> {
@@ -35,8 +36,8 @@ export function printWeather(
 ): void {
   console.log(`\n--- ${cityKey(city)} ---`);
   console.log(`  Estado: ${weatherCodeLabel(weather.code)}`);
-  console.log(`  Temperatura: ${weather.temperature}${unit}`);
-  console.log(`  Sensación térmica: ${weather.apparent}${unit}`);
+  console.log(`  Temperatura: ${yellow(`${weather.temperature}${unit}`)}`);
+  console.log(`  Sensación térmica: ${yellow(`${weather.apparent}${unit}`)}`);
   console.log(`  Humedad: ${weather.humidity}%`);
   console.log(`  Viento: ${weather.wind} km/h`);
   console.log(`  Hora local: ${weather.time}\n`);

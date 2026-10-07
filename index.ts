@@ -7,6 +7,7 @@ import {
 } from "./src/storage.ts";
 import {
   getCurrentWeather,
+  getWeeklyForecast,
   searchCities,
   unitSymbol,
 } from "./src/openmeteo.ts";
@@ -15,6 +16,7 @@ import {
   printCandidates,
   printCityList,
   printWeather,
+  printWeeklyForecast,
   renderMenu,
 } from "./src/ui.ts";
 import { green, red } from "./src/colors.ts";
@@ -117,8 +119,19 @@ async function handleRemove(store: Store): Promise<void> {
   console.log(green(`Eliminada: ${removed ? cityKey(removed) : ""}`));
 }
 
-async function handleSetDefault(store: Store): Promise<void> {
-  const idx = await pickFromList(store, "Número de la default: ");
+async function handleWeekly(store: Store): Promise<void> {
+  const idx = await pickFromList(store, "Número a pronosticar (0 cancela): ");
+  if (idx === null) return;
+  const city = store.cities[idx]!;
+  try {
+    const days = await getWeeklyForecast(city, store.unit);
+    printWeeklyForecast(city, days, unitSymbol(store.unit));
+  } catch (err) {
+    console.log(red(`No pude obtener el pronóstico: ${(err as Error).message}`));
+  }
+}
+
+async function handleSetDefault(store: Store): Promise<void> {  const idx = await pickFromList(store, "Número de la default: ");
   if (idx === null) return;
   store.defaultCity = store.cities[idx]!.name;
   await saveStore(store);
@@ -156,6 +169,9 @@ async function main(): Promise<void> {
       case "5":
         await handleSetDefault(store);
         break;
+      case "6":
+        await handleWeekly(store);
+        break;
       case "8":
         await handleSettings(store);
         break;
@@ -163,7 +179,7 @@ async function main(): Promise<void> {
         console.log("¡Chau!");
         return;
       default:
-        console.log(red("Opción inválida. Elegí 1, 2, 3, 4, 5, 8 o 9."));
+        console.log(red("Opción inválida. Elegí 1, 2, 3, 4, 5, 6, 8 o 9."));
     }
   }
 }

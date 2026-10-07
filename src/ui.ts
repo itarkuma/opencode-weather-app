@@ -6,6 +6,7 @@ import {
   unitSymbol,
   weatherCodeLabel,
   type CurrentWeather,
+  type DayForecast,
   type GeoCandidate,
 } from "./openmeteo.ts";
 
@@ -20,6 +21,7 @@ export function renderMenu(store: Store): void {
   console.log(`  ${cyan("3")}. Buscar y agregar ciudad`);
   console.log(`  ${cyan("4")}. Eliminar ciudad`);
   console.log(`  ${cyan("5")}. Establecer ciudad default`);
+  console.log(`  ${cyan("6")}. Pronóstico 7 días`);
   console.log(`  ${cyan("8")}. Ajustes (${unitSymbol(store.unit)})`);
   console.log(`  ${cyan("9")}. Salir`);
   console.log(cyan(BAR));
@@ -41,6 +43,27 @@ export function printWeather(
   console.log(`  Humedad: ${weather.humidity}%`);
   console.log(`  Viento: ${weather.wind} km/h`);
   console.log(`  Hora local: ${weather.time}\n`);
+}
+
+export function printWeeklyForecast(
+  city: City,
+  days: DayForecast[],
+  unit: string,
+): void {
+  const fmt = new Intl.DateTimeFormat("es", {
+    weekday: "short",
+    day: "2-digit",
+    month: "2-digit",
+  });
+  console.log(`\n--- ${cityKey(city)} · 7 días ---`);
+  for (const d of days) {
+    // "T12:00:00Z" evita que la zona local corra el día ±1
+    const label = fmt.format(new Date(`${d.date}T12:00:00Z`));
+    console.log(
+      `  ${label} — ${weatherCodeLabel(d.code)} — ${yellow(`${d.max}${unit}/${d.min}${unit}`)}`,
+    );
+  }
+  console.log();
 }
 
 export function printCandidates(candidates: GeoCandidate[]): void {

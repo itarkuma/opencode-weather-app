@@ -25,3 +25,7 @@ export async function readLine(prompt: string): Promise<string | null> {
     pending += decoder.decode(value, { stream: true });
   }
 }
+
+export async function ask(prompt: string): Promise<string | null> {
+  return readLine(prompt);
+}

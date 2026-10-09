@@ -13,8 +13,39 @@ import { addCity } from "../actions/addCity.ts";
 import { removeCity } from "../actions/removeCity.ts";
 import { setDefault } from "../actions/setDefaultCity.ts";
 
-function isMenuOption(value: string): value is MenuOption {
+export function isMenuOption(value: string): value is MenuOption {
   return ["1", "2", "3", "4", "5", "6", "8", "9"].includes(value);
+}
+
+export async function handleOption(option: MenuOption): Promise<boolean> {
+  switch (option) {
+    case "1":
+      await showDefaultWeather();
+      return false;
+    case "2":
+      await showAllWeather();
+      return false;
+    case "3":
+      await addCity();
+      return false;
+    case "4":
+      await removeCity();
+      return false;
+    case "5":
+      await setDefault();
+      return false;
+    case "6":
+      await showWeeklyForecast();
+      return false;
+    case "8": {
+      const next = await toggleUnit();
+      ok(`Unidad actual: ${unitSymbol(next)}`);
+      return false;
+    }
+    case "9":
+      console.log("¡Chau!");
+      return true;
+  }
 }
 
 export function renderMenu(count: number, unit: Unit): void {
@@ -45,33 +76,7 @@ export async function runMenu(): Promise<void> {
       err("Opción inválida. Elegí 1, 2, 3, 4, 5, 6, 8 o 9.");
       continue;
     }
-    switch (option) {
-      case "1":
-        await showDefaultWeather();
-        break;
-      case "2":
-        await showAllWeather();
-        break;
-      case "3":
-        await addCity();
-        break;
-      case "4":
-        await removeCity();
-        break;
-      case "5":
-        await setDefault();
-        break;
-      case "6":
-        await showWeeklyForecast();
-        break;
-      case "8": {
-        const next = await toggleUnit();
-        ok(`Unidad actual: ${unitSymbol(next)}`);
-        break;
-      }
-      case "9":
-        console.log("¡Chau!");
-        return;
-    }
+    const shouldExit = await handleOption(option);
+    if (shouldExit) return;
   }
 }

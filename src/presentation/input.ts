@@ -1,8 +1,18 @@
 // Line reader over Bun.stdin that works with TTY, pipes and redirects
 // (node:readline closes the interface on non-TTY stdin in Bun).
+// Reader is created lazily so `bun test` can import this module
+// without holding an open stdin handle.
 const decoder = new TextDecoder();
-const reader = Bun.stdin.stream().getReader();
+interface ByteReader {
+  read(): Promise<{ done: boolean; value: Uint8Array | undefined }>;
+}
+let reader: ByteReader | null = null;
 let pending = "";
+
+function getReader(): ByteReader {
+  if (!reader) reader = Bun.stdin.stream().getReader() as unknown as ByteReader;
+  return reader;
+}
 
 export async function readLine(prompt: string): Promise<string | null> {
   process.stdout.write(prompt);
@@ -13,7 +23,7 @@ export async function readLine(prompt: string): Promise<string | null> {
       pending = pending.slice(nl + 1);
       return line.replace(/\r$/, "").trim();
     }
-    const { done, value } = await reader.read();
+    const { done, value } = await getReader().read();
     if (done) {
       if (pending.length > 0) {
         const line = pending;

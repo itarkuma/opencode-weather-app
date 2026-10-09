@@ -6,7 +6,12 @@
   "scripts": {
     "start": "bun run src/index.ts",
     "dev": "bun run src/index.ts --watch",
-    "build": "bun build ./src/index.ts --compile --outfile ./weather"
+    "test": "bun test ./test",
+    "test:watch": "bun test --watch",
+    "test:coverage": "bun test --coverage ./test",
+    "typecheck": "bunx tsc --noEmit",
+    "check": "bun run test && bun run typecheck",
+    "build": "bun run check && bun build ./src/index.ts --compile --outfile ./weather"
   },
   "devDependencies": {
     "@types/bun": "latest"

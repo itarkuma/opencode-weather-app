@@ -1,4 +1,4 @@
-import { DATA_FILE } from "../utils/constants.ts";
+import { getDataFile } from "../utils/constants.ts";
 import type { Unit } from "../types/City.ts";
 import type { Store } from "../types/Store.ts";
 
@@ -7,7 +7,7 @@ function emptyStore(): Store {
 }
 
 async function load(): Promise<Store> {
-  const file = Bun.file(DATA_FILE);
+  const file = Bun.file(getDataFile());
   if (!(await file.exists())) return emptyStore();
   try {
     const raw = (await file.json()) as Partial<Store>;
@@ -22,7 +22,7 @@ async function load(): Promise<Store> {
 }
 
 async function save(store: Store): Promise<void> {
-  await Bun.write(DATA_FILE, JSON.stringify(store, null, 2));
+  await Bun.write(getDataFile(), JSON.stringify(store, null, 2));
 }
 
 export async function getUnit(): Promise<Unit> {
